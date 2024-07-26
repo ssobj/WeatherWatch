@@ -1,0 +1,318 @@
+.weatherApp {
+    background-color: #fff;
+    display: flex;
+  }
+  
+  .chatSection {
+    padding: 80px;
+    width: 43%;
+  }
+  
+  .forecastSection {
+    width: 57%;
+  }
+  
+  .select {
+    font-family: 'Arial', sans-serif; /* Match the font-family */
+    font-size: 16px; /* Match the font-size */
+    color: #333; /* Match the text color */
+    padding: 8px; /* Adjust padding as needed */
+    border: none; /* Remove border */
+    border-radius: 4px; /* Optional: add border-radius for rounded corners */
+    background-color: #fff; /* Background color */
+    width: 95%; /* Stretch horizontally */
+    box-sizing: border-box; /* Include padding and border in width */
+  }
+  
+  /* Optional: style for options if needed */
+  .select option {
+    font-family: 'Arial', sans-serif; /* Match the font-family */
+    font-size: 16px; /* Match the font-size */
+  }
+  
+    
+  h1, .appTitlec {
+    font-family: Inter, sans-serif;
+    font-weight: 800;
+    font-size: 69px;
+    color: #000;
+  }
+
+  .appInstruction {
+    font-family: Inter, sans-serif;
+    font-weight: 600;
+    font-size: 20px;
+    color: #000;
+  }
+  
+  .greeting {
+    font-family: Inter, sans-serif;
+    font-weight: 400;
+    font-size: 69px;
+    color: #000;
+    margin-top: 49px;
+  }
+  
+  .chatContainer {
+    border-radius: 38px;
+    background-color: #f4f4f4;
+    display: flex;
+    flex-direction: column;
+    font-size: 20px;
+    padding: 40px 28px 20px;
+    margin-top: 64px;
+  }
+  
+  .messageList {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    color: #000;
+    font-weight: 400;
+    max-height: 320px; /* Set a fixed height */
+    overflow-y: auto; /* Enable vertical scrolling */
+  }
+  
+  .messageItem {
+    font-family: Inter, sans-serif;
+    border-radius: 13px;
+    background-color: #fff;
+    padding: 17px;
+    margin-bottom: 2px;
+    white-space: nowrap; /* Prevent wrapping */
+   
+    text-overflow: ellipsis; /* Add ellipsis for overflow text */
+  }
+  
+    
+  .scrollbar {
+    border-radius: 13px;
+    background-color: #d9d9d9;
+    width: 8px;
+    height: 423px;
+  }
+  
+  .divider {
+    border-radius: 13px;
+    background-color: #d9d9d9;
+    height: 4px;
+    margin-top: 20px;
+  }
+  
+  .reportSection {
+    display: flex;
+    margin-top: 17px;
+    gap: 16px;
+  }
+  
+  .weatherSelect {
+    border-radius: 18px;
+    background-color: #fff;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    color: #000;
+    font-weight: 400;
+    flex-grow: 1;
+    padding: 0 5px 0 33px;
+  }
+  
+
+  .weatherOption {
+    font-family: Inter, sans-serif;
+    flex-grow: 1;
+  }
+  
+  .weatherIcon {
+    width: 130px; /* Adjust the width as needed */
+    height: 130px; /* Adjust the height as needed */
+    margin-right: 10px; /* Space between icon and location text */
+    margin-top:30px;
+    }
+  
+  .reportButton {
+    font-family: Inter, sans-serif;
+    border-radius: 18px;
+    background-color: #007aff;
+    color: #fff;
+    font-weight: 700;
+    padding: 22px 60px;
+    border: none;
+    cursor: pointer;
+  }
+  
+  .forecastContainer {
+    font-family: Inter, sans-serif;
+    font-weight: 400;
+    margin: 0px;
+    position: relative;
+    min-height: 1080px;
+  }
+  
+  .backgroundImage {
+    position: absolute;
+    inset: 0;
+    height: 100%;
+    width: 100%;
+    object-fit: cover;
+    margin: 0px;
+  }
+  
+  .forecastContent {
+    position: relative;
+    background-color: rgba(0, 0, 0, 0.7);
+    padding: 80px 75px;
+    color: #fff;
+    margin: 0px;
+  }
+  
+  .searchForm {
+    display: flex;
+    gap: 16px;
+    font-size: 20px;
+    margin-bottom: 20px;
+  }
+  
+  .searchInput {
+    border-radius: 18px;
+    background-color: #fff;
+    width: 446px;
+    height: 63px;
+    border: none;
+    padding: 0 20px;
+  }
+  
+  .searchButton {
+    font-family: Inter, sans-serif;
+    border-radius: 18px;
+    background-color: #007aff;
+    color: #fff;
+    font-weight: 700;
+    padding: 0 60px;
+    border: none;
+    cursor: pointer;
+  }
+  
+  .location {
+    font-size: 69px;
+    font-weight: 700;
+    margin-bottom: 10px;
+  }
+  
+  .dateTime {
+    display: flex;
+    gap: 20px;
+    font-size: 32px;
+  }
+
+  .logoLoc {
+    display: flex;
+    align-items: center;
+    justify-content: left;
+    margin: 10px 0;
+  }
+    
+  .currentTemp {
+    font-size: 69px;
+    font-weight: 700;
+    margin: 16px 0 ;
+  }
+  
+  .forecastDetails {
+    display: flex;
+    gap: 20px;
+  }
+  
+  .upcomingForecast,
+  .nextDaysForecast {
+    width: 50%;
+  }
+  
+  .forecastTitle {
+    font-size: 40px;
+    margin-bottom: 20px;
+  }
+  
+  .forecastItem {
+    margin-bottom: 20px;
+  }
+  
+  .forecastTime,
+  .forecastDay {
+    font-size: 25px;
+  }
+  
+  .forecastCondition {
+    font-size: 30px;
+    font-weight: 700;
+    color: #0085ff;
+  }
+  
+  .visuallyHidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+  
+  @media (max-width: 991px) {
+    .weatherApp {
+      display: grid;
+      padding: 20px;
+    }
+  
+    .forecastSection{
+      width: 100%;
+    }
+
+    .chatSection
+     {
+      width: 80%;
+    }
+  
+    .appTitle,
+    .greeting,
+    .location,
+    .currentTemp {
+      font-size: 40px;
+    }
+  
+    .chatContainer {
+      margin-top: 40px;
+      padding: 20px;
+    }
+  
+    .divider {
+      margin-top: 40px;
+    }
+  
+    .reportSection,
+    .searchForm,
+    .forecastDetails {
+      flex-wrap: wrap;
+    }
+  
+    .weatherSelect,
+    .reportButton,
+    .searchInput,
+    .searchButton {
+      width: 100%;
+      margin-bottom: 10px;
+    }
+  
+    .forecastContent {
+      padding: 40px 20px;
+    }
+  
+    .upcomingForecast,
+    .nextDaysForecast {
+      width: 100%;
+    }
+  }
+
+  
