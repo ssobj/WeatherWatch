@@ -6,7 +6,6 @@ import styles from './WeatherApp.module.css';
 
 const protocol = window.location.protocol.includes('https') ? 'wss' : 'ws';
 const WS_URL = `${protocol}://${window.location.host}/ws`;
-
 const OPENWEATHERMAP_API_KEY = 'feff206daa60b539abe8fae8f2ab7f29';
 
 function WeatherChat({ username }) {
@@ -42,52 +41,55 @@ function WeatherChat({ username }) {
       setLocation('Your Location');
     }
 
-    const ws = new WebSocket(WS_URL);
-    setSocket(ws);
+    const connectWebSocket = () => {
+      const ws = new WebSocket(WS_URL);
+      setSocket(ws);
 
-    ws.onopen = () => {
-      console.log('Connected to WebSocket server');
-    };
+      ws.onopen = () => {
+        console.log('Connected to WebSocket server');
+      };
 
-    ws.onmessage = (event) => {
-      if (typeof event.data === 'string') {
-        try {
-          const message = JSON.parse(event.data);
-          setChatMessages((prevMessages) => [message, ...prevMessages]);
-        } catch (error) {
-          console.error('Error parsing JSON:', error);
-        }
-      } else if (event.data instanceof Blob) {
-        const reader = new FileReader();
-        reader.onload = () => {
+      ws.onmessage = (event) => {
+        if (typeof event.data === 'string') {
           try {
-            const text = reader.result;
-            const message = JSON.parse(text);
+            const message = JSON.parse(event.data);
             setChatMessages((prevMessages) => [message, ...prevMessages]);
           } catch (error) {
-            console.error('Error parsing Blob data:', error);
+            console.error('Error parsing JSON:', error);
           }
-        };
-        reader.readAsText(event.data);
-      }
+        } else if (event.data instanceof Blob) {
+          const reader = new FileReader();
+          reader.onload = () => {
+            try {
+              const text = reader.result;
+              const message = JSON.parse(text);
+              setChatMessages((prevMessages) => [message, ...prevMessages]);
+            } catch (error) {
+              console.error('Error parsing Blob data:', error);
+            }
+          };
+          reader.readAsText(event.data);
+        }
+      };
+
+      ws.onerror = (error) => {
+        console.error('WebSocket error:', error);
+      };
+
+      ws.onclose = () => {
+        console.warn('WebSocket connection closed. Reconnecting...');
+        setTimeout(connectWebSocket, 3000);
+      };
     };
 
-    ws.onerror = (error) => {
-      console.error('WebSocket error:', error);
-    };
-
-    ws.onclose = () => {
-      console.warn('WebSocket connection closed. Reconnecting...');
-      setTimeout(() => {
-        const newWs = new WebSocket(WS_URL);
-        setSocket(newWs);
-      }, 3000);
-    };
+    connectWebSocket();
 
     return () => {
-      ws.close();
+      if (socket) {
+        socket.close();
+      }
     };
-  }, []);
+  }, [WS_URL]);
 
   const handleReport = () => {
     if (selectedWeather === "") {
