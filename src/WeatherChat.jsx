@@ -4,7 +4,9 @@ import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import styles from './WeatherApp.module.css';
 
-const WS_URL = 'wss://walrus-app-9w466.ondigitalocean.app:8080'; // Ensure this matches your WebSocket server URL
+const protocol = window.location.protocol.includes('https') ? 'wss' : 'ws';
+const WS_URL = `${protocol}://${window.location.host}/ws`;
+
 const OPENWEATHERMAP_API_KEY = 'feff206daa60b539abe8fae8f2ab7f29';
 
 function WeatherChat({ username }) {

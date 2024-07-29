@@ -1,17 +1,20 @@
+const express = require('express');
+const http = require('http');
 const WebSocket = require('ws');
-const server = new WebSocket.Server({ port: 8080 });
+
+const app = express();
+const server = http.createServer(app);
+const wss = new WebSocket.Server({ server });
 
 const clients = new Set();
 
-server.on('connection', (ws) => {
+wss.on('connection', (ws) => {
   clients.add(ws);
 
   ws.on('message', (message) => {
     try {
-      // Ensure the message is a valid JSON string
       const parsedMessage = JSON.parse(message);
 
-      // Broadcast the message to all connected clients
       clients.forEach(client => {
         if (client !== ws && client.readyState === WebSocket.OPEN) {
           client.send(JSON.stringify(parsedMessage));
@@ -31,4 +34,6 @@ server.on('connection', (ws) => {
   });
 });
 
-console.log('WebSocket server is running on wss://walrus-app-9w466.ondigitalocean.app:8080');
+server.listen(process.env.PORT || 8080, () => {
+  console.log(`Server is running on port ${server.address().port}`);
+});
