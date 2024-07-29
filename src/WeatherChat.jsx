@@ -48,9 +48,12 @@ function WeatherChat({ username }) {
     };
 
     ws.onmessage = (event) => {
+      console.log('Received WebSocket message:', event.data); // Log raw message
+
       if (typeof event.data === 'string') {
         try {
           const message = JSON.parse(event.data);
+          console.log('Parsed message:', message); // Log parsed message
           setChatMessages((prevMessages) => [message, ...prevMessages]);
         } catch (error) {
           console.error('Error parsing JSON:', error);
@@ -61,6 +64,7 @@ function WeatherChat({ username }) {
           try {
             const text = reader.result;
             const message = JSON.parse(text);
+            console.log('Parsed Blob message:', message); // Log parsed Blob message
             setChatMessages((prevMessages) => [message, ...prevMessages]);
           } catch (error) {
             console.error('Error parsing Blob data:', error);
