@@ -1,7 +1,4 @@
 import React, { useState, useEffect } from "react";
-import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
-import L from 'leaflet';
-import 'leaflet/dist/leaflet.css';
 import styles from './WeatherApp.module.css';
 
 const WS_URL = 'ws://localhost:8080'; // Ensure this matches your WebSocket server URL
@@ -11,33 +8,29 @@ function WeatherChat({ username }) {
   const [chatMessages, setChatMessages] = useState([]);
   const [selectedWeather, setSelectedWeather] = useState('');
   const [location, setLocation] = useState('Your Location');
-  const [coords, setCoords] = useState({ lat: 0, lon: 0 });
   const [socket, setSocket] = useState(null);
-  const [showMap, setShowMap] = useState(false);
-  const [mapCoords, setMapCoords] = useState({ lat: 0, lon: 0 });
-  const [mapIcon, setMapIcon] = useState(null);
 
   useEffect(() => {
+    // Get the user's location
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition((position) => {
         const { latitude, longitude } = position.coords;
-        setCoords({ lat: latitude, lon: longitude });
         fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${latitude}&lon=${longitude}&appid=${OPENWEATHERMAP_API_KEY}`)
           .then(response => response.json())
           .then(data => {
-            setLocation(data.name || 'Your Location');
+            setLocation(data.name || 'Your Location'); // Set city or default if not available
           })
           .catch(error => {
             console.error('Error fetching location:', error);
-            setLocation('Your Location');
+            setLocation('Your Location'); // Default if there's an error
           });
       }, (error) => {
         console.error('Error getting geolocation:', error);
-        setLocation('Your Location');
+        setLocation('Your Location'); // Default if there's an error
       });
     } else {
       console.error('Geolocation is not supported by this browser.');
-      setLocation('Your Location');
+      setLocation('Your Location'); // Default if geolocation is not supported
     }
 
     const ws = new WebSocket(WS_URL);
@@ -49,6 +42,7 @@ function WeatherChat({ username }) {
 
     ws.onmessage = (event) => {
       if (typeof event.data === 'string') {
+        // Handle text data
         try {
           const message = JSON.parse(event.data);
           setChatMessages((prevMessages) => [message, ...prevMessages]);
@@ -56,6 +50,7 @@ function WeatherChat({ username }) {
           console.error('Error parsing JSON:', error);
         }
       } else if (event.data instanceof Blob) {
+        // Handle Blob data
         const reader = new FileReader();
         reader.onload = () => {
           try {
@@ -93,16 +88,15 @@ function WeatherChat({ username }) {
       return;
     }
 
-    const [icon, iconName] = selectedWeather.split(' ', 2);
+    const [icon, iconName] = selectedWeather.split(' ', 2); // Extract icon and icon name
     const message = {
-      user: username,
+      user: username, // Use the entered username
       weather: `${icon} ${iconName}`,
-      location: location,
+      location: location, // Include user's city location
       time: new Date().toLocaleTimeString(),
-      coords: coords
     };
 
-    console.log('Sending message:', message);
+    console.log('Sending message:', message); // Check if this log appears when you click Report
 
     if (socket && socket.readyState === WebSocket.OPEN) {
       socket.send(JSON.stringify(message));
@@ -110,34 +104,8 @@ function WeatherChat({ username }) {
       console.error('WebSocket is not open');
     }
 
+    // Reset to default option after submitting
     setSelectedWeather("");
-  };
-
-  const handleLocationClick = (coords, icon) => {
-    setMapCoords(coords);
-    setShowMap(true);
-    setMapIcon(icon);
-  };
-
-  const CustomMarker = ({ coords, icon }) => {
-    const map = useMap();
-    useEffect(() => {
-      if (coords) {
-        map.setView(coords, 13);
-      }
-    }, [coords, map]);
-
-    return (
-      <Marker
-        position={coords}
-        icon={L.divIcon({
-          html: `<div style="font-size: 24px;">${icon}</div>`,
-          className: ''
-        })}
-      >
-        <Popup>{icon} is reported in {location}</Popup>
-      </Marker>
-    );
   };
 
   return (
@@ -145,10 +113,7 @@ function WeatherChat({ username }) {
       <div className={styles.messageList}>
         {chatMessages.map((message, index) => (
           <div key={index} className={styles.messageItem}>
-            {message.user} reported {message.weather} at {message.time} from&nbsp;
-            <a href="#" onClick={() => handleLocationClick(message.coords, message.weather.split(' ')[0])}>
-              {message.location}
-            </a>
+            {message.user} reported {message.weather} at {message.time} from {message.location}
           </div>
         ))}
       </div>
@@ -181,18 +146,6 @@ function WeatherChat({ username }) {
           Report
         </button>
       </div>
-      {showMap && (
-        <div className={styles.mapPopup}>
-          <button className={styles.closeButton} onClick={() => setShowMap(false)}>X</button>
-          <MapContainer center={[mapCoords.lat, mapCoords.lon]} zoom={14} className={styles.map}>
-            <TileLayer
-              url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-              attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-            />
-            <CustomMarker coords={[mapCoords.lat, mapCoords.lon]} icon={mapIcon} />
-          </MapContainer>
-        </div>
-      )}
     </div>
   );
 }
