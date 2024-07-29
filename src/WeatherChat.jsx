@@ -4,8 +4,7 @@ import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import styles from './WeatherApp.module.css';
 
-const protocol = window.location.protocol.includes('https') ? 'wss' : 'ws';
-const WS_URL = `${protocol}://${window.location.host}/ws`;
+const WS_URL = `wss://${window.location.host}/ws`; // Ensure this matches your WebSocket server URL
 const OPENWEATHERMAP_API_KEY = 'feff206daa60b539abe8fae8f2ab7f29';
 
 function WeatherChat({ username }) {
@@ -41,55 +40,52 @@ function WeatherChat({ username }) {
       setLocation('Your Location');
     }
 
-    const connectWebSocket = () => {
-      const ws = new WebSocket(WS_URL);
-      setSocket(ws);
+    const ws = new WebSocket(WS_URL);
+    setSocket(ws);
 
-      ws.onopen = () => {
-        console.log('Connected to WebSocket server');
-      };
+    ws.onopen = () => {
+      console.log('Connected to WebSocket server');
+    };
 
-      ws.onmessage = (event) => {
-        if (typeof event.data === 'string') {
+    ws.onmessage = (event) => {
+      if (typeof event.data === 'string') {
+        try {
+          const message = JSON.parse(event.data);
+          setChatMessages((prevMessages) => [message, ...prevMessages]);
+        } catch (error) {
+          console.error('Error parsing JSON:', error);
+        }
+      } else if (event.data instanceof Blob) {
+        const reader = new FileReader();
+        reader.onload = () => {
           try {
-            const message = JSON.parse(event.data);
+            const text = reader.result;
+            const message = JSON.parse(text);
             setChatMessages((prevMessages) => [message, ...prevMessages]);
           } catch (error) {
-            console.error('Error parsing JSON:', error);
+            console.error('Error parsing Blob data:', error);
           }
-        } else if (event.data instanceof Blob) {
-          const reader = new FileReader();
-          reader.onload = () => {
-            try {
-              const text = reader.result;
-              const message = JSON.parse(text);
-              setChatMessages((prevMessages) => [message, ...prevMessages]);
-            } catch (error) {
-              console.error('Error parsing Blob data:', error);
-            }
-          };
-          reader.readAsText(event.data);
-        }
-      };
-
-      ws.onerror = (error) => {
-        console.error('WebSocket error:', error);
-      };
-
-      ws.onclose = () => {
-        console.warn('WebSocket connection closed. Reconnecting...');
-        setTimeout(connectWebSocket, 3000);
-      };
-    };
-
-    connectWebSocket();
-
-    return () => {
-      if (socket) {
-        socket.close();
+        };
+        reader.readAsText(event.data);
       }
     };
-  }, [WS_URL]);
+
+    ws.onerror = (error) => {
+      console.error('WebSocket error:', error);
+    };
+
+    ws.onclose = () => {
+      console.warn('WebSocket connection closed. Reconnecting...');
+      setTimeout(() => {
+        const newWs = new WebSocket(WS_URL);
+        setSocket(newWs);
+      }, 3000);
+    };
+
+    return () => {
+      ws.close();
+    };
+  }, []);
 
   const handleReport = () => {
     if (selectedWeather === "") {
@@ -97,7 +93,8 @@ function WeatherChat({ username }) {
       return;
     }
 
-    const [icon, iconName] = selectedWeather.split(' ', 2);
+    const [icon, ...iconNameParts] = selectedWeather.split(' ');
+    const iconName = iconNameParts.join(' ');
     const message = {
       user: username,
       weather: `${icon} ${iconName}`,
